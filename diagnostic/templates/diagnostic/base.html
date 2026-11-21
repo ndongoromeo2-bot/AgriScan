@@ -1,0 +1,36 @@
+{% load static %}
+
+\<!DOCTYPE html>
+
+\<html lang="fr"> \<head>     \<meta charset="UTF-8">     \<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">     \<meta name="theme-color" content="#2e7d32">
+
+```
+<title>{% block titre %}AgriScan - Diagnostic du sol{% endblock %}</title>
+
+<link rel="stylesheet" href="{% static 'diagnostic/style.css' %}">
+```
+
+\</head>
+
+\<body>
+
+```
+<header class="entete">
+    <h1>AgriScan</h1>
+    <p>Diagnostic du sol par intelligence artificielle</p>
+</header>
+
+<main>
+    {% block contenu %}{% endblock %}
+</main>
+
+<footer class="avertissement">
+    Diagnostic visuel indicatif : il ne remplace pas une analyse
+    physico-chimique en laboratoire (pH, azote, phosphore, potassium).
+</footer>
+
+<script src="{% static 'diagnostic/app.js' %}"></script>
+```
+
+\</body>
+\</html>

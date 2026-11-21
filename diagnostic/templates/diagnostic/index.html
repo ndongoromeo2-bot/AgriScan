@@ -1,0 +1,145 @@
+{% extends "diagnostic/base.html" %}
+
+{% block contenu %}
+
+{% if resultat %}
+<section class="carte resultat" aria-live="polite">
+
+    <img src="{{ image_url }}" alt="Photo du sol analysée">
+
+    <p class="statut {% if est_fertile %}fertile{% else %}pauvre{% endif %}">
+        Résultat : <strong>{{ statut }}</strong>
+    </p>
+
+    <div class="jauge {% if not est_fertile %}pauvre{% endif %}"
+         role="progressbar"
+         aria-label="Taux de confiance"
+         aria-valuemin="0"
+         aria-valuemax="100"
+         aria-valuenow="{{ largeur }}">
+        <span style="width: {{ largeur }}%"></span>
+    </div>
+
+    <div class="confiance">
+        <span>Score indicatif</span>
+        <strong>{{ confiance }} %</strong>
+    </div>
+
+    {% if not fiable %}
+    <p class="alerte">
+        Résultat peu sûr. Reprenez la photo plus près du sol,
+        en pleine lumière et sans ombre, puis relancez l'analyse.
+    </p>
+    {% endif %}
+
+    <div class="conseil {% if not est_fertile %}pauvre{% endif %}">
+        <strong>Conseil :</strong> {{ conseil }}
+    </div>
+
+</section>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data"
+      id="formulaire" novalidate>
+
+    {% csrf_token %}
+
+    <div class="carte">
+
+        <ol class="etapes">
+            <li class="etape actif"><span>1</span>Scanner</li>
+            <li class="etape"><span>2</span>Analyser</li>
+        </ol>
+
+        <p class="intro">
+            Scannez votre parcelle pour évaluer sa fertilité.
+        </p>
+
+        {% if form.image.errors %}
+        <div class="erreur" role="alert">
+            {% for e in form.image.errors %}
+                {{ e }}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="erreur" id="erreur_js" role="alert" hidden></div>
+
+        <input type="file"
+               id="id_image"
+               name="image"
+               class="sr-only"
+               accept="image/jpeg,image/png"
+               capture="environment">
+
+        <label class="zone" for="id_image">
+
+            <svg viewBox="0 0 24 24"
+                 width="56"
+                 height="56"
+                 aria-hidden="true"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="1.6"
+                 stroke-linecap="round"
+                 stroke-linejoin="round">
+
+                <path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/>
+
+                <circle cx="12" cy="13" r="3.5"/>
+
+            </svg>
+
+            <span>Appuyez ici pour scanner</span>
+
+            <small>ou choisir une photo du sol (JPG / PNG)</small>
+
+        </label>
+
+        <p class="nom-fichier" id="nom_fichier">
+            Aucune photo sélectionnée
+        </p>
+
+        <div class="apercu" id="apercu">
+            <img id="apercu_img" alt="Aperçu de la photo choisie">
+        </div>
+
+    </div>
+
+    <div class="barre-action">
+
+        <button type="submit"
+                class="bouton"
+                id="btn_analyser"
+                disabled>
+
+            <span class="chargeur" aria-hidden="true"></span>
+
+            <span class="texte">ANALYSER LE SOL</span>
+
+        </button>
+
+    </div>
+
+</form>
+
+<details class="carte aide">
+
+    <summary>Comment prendre une bonne photo ?</summary>
+
+    <ul>
+        <li>Photographiez la terre nue, de près (30 à 50 cm), sans plantes ni ombre portée.</li>
+        <li>Préférez la lumière du jour et évitez le contre-jour.</li>
+        <li>Une seule parcelle par photo.</li>
+    </ul>
+
+    <p>
+        <strong>Limites :</strong>
+        l'analyse visuelle estime la couleur, la texture et l'humidité apparente.
+        Elle ne remplace pas une analyse en laboratoire
+        (pH, azote, phosphore, potassium).
+    </p>
+
+</details>
+
+{% endblock %}
